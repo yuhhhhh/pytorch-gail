@@ -1,5 +1,9 @@
-gym
+gym~=0.26.2
 matplotlib
 pybullet
 stable-baselines3
-h5py
+h5py~=3.7.0
+numpy~=1.21.5
+setuptools~=61.2.0
+yaml~=0.2.5
+pyyaml~=6.0

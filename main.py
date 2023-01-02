@@ -141,14 +141,14 @@ def main():
         if args.gail:
             if j >= 10:
                 envs.venv.eval()
-
+            # 设置gail中鉴别器的更新次数
             gail_epoch = args.gail_epoch
             if j < 10:
                 gail_epoch = 100  # Warm up
             for _ in range(gail_epoch):
                 discr.update(gail_train_loader, rollouts,
                              utils.get_vec_normalize(envs)._obfilt)
-
+            # 计算该回合内所有步数对应的奖励值
             for step in range(args.num_steps):
                 rollouts.rewards[step] = discr.predict_reward(
                     rollouts.obs[step], rollouts.actions[step], args.gamma,

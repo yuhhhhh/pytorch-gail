@@ -8,6 +8,7 @@ from torch import autograd
 
 from stable_baselines3.common.running_mean_std import RunningMeanStd
 
+
 class Discriminator(nn.Module):
     def __init__(self, input_dim, hidden_dim, device):
         super(Discriminator, self).__init__()
@@ -130,6 +131,7 @@ class ExpertDataset(torch.utils.data.Dataset):
             if k != 'lengths':
                 samples = []
                 for i in range(num_trajectories):
+                    # 从第start_idx个开始，每subsample_frequency个取一个
                     samples.append(data[i, start_idx[i]::subsample_frequency])
                 self.trajectories[k] = torch.stack(samples)
             else:
@@ -146,7 +148,10 @@ class ExpertDataset(torch.utils.data.Dataset):
         self.get_idx = []
         
         for j in range(self.length):
-            
+            """
+            将每一个轨迹序列的数据编号，比如0-(0，0)，表示第0个数据是第0个序列的第0个，即j-(traj_idx, i)
+            所以当i大于当前序列的最大长度时，需要将i复位，然后traj_idx加1指向下一个序列
+            """
             while self.trajectories['lengths'][traj_idx].item() <= i:
                 i -= self.trajectories['lengths'][traj_idx].item()
                 traj_idx += 1
@@ -154,8 +159,7 @@ class ExpertDataset(torch.utils.data.Dataset):
             self.get_idx.append((traj_idx, i))
 
             i += 1
-            
-            
+
     def __len__(self):
         return self.length
 
